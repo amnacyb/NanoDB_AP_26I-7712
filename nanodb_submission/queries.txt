@@ -1,0 +1,73 @@
+# NanoDB Workload File - 50 TPC-H Queries
+# CS-4002 Applied Programming | MS-CS-Spring-2026
+# Lines beginning with # are comments and are skipped.
+
+# ── Section 1: Simple INSERT statements ──────────────────────────────────────
+INSERT INTO customer VALUES (100001, "Workload Customer 1", "123 Test St", 5, "999-0001", 3200.50, "BUILDING", "workload test record")
+INSERT INTO customer VALUES (100002, "Workload Customer 2", "456 Demo Ave", 12, "999-0002", 7500.00, "AUTOMOBILE", "workload test 2")
+INSERT INTO orders VALUES (100001, 100001, "O", 75000.00, "1996-01-15", "1-URGENT", "Clerk#000001", 0, "workload order")
+INSERT INTO orders VALUES (100002, 100002, "F", 120000.00, "1995-06-20", "2-HIGH", "Clerk#000002", 1, "workload order 2")
+INSERT INTO lineitem VALUES (100001, 500, 200, 1, 10.00, 5000.00, 0.05, 0.02, "N", "O", "1996-02-01", "workload lineitem")
+
+# ── Section 2: Simple SELECT queries ──────────────────────────────────────────
+SELECT * FROM customer WHERE c_custkey == 1
+SELECT * FROM customer WHERE c_custkey == 100
+SELECT * FROM orders WHERE o_orderkey == 1
+SELECT * FROM lineitem WHERE l_orderkey == 1
+SELECT * FROM customer WHERE c_nationkey == 5
+SELECT * FROM orders WHERE o_orderstatus == "O"
+SELECT * FROM orders WHERE o_orderstatus == "F"
+SELECT * FROM customer WHERE c_mktsegment == "BUILDING"
+SELECT * FROM customer WHERE c_mktsegment == "AUTOMOBILE"
+SELECT * FROM customer WHERE c_custkey == 100001
+
+# ── Section 3: Numeric comparison queries ─────────────────────────────────────
+SELECT * FROM customer WHERE c_acctbal > 9000
+SELECT * FROM customer WHERE c_acctbal < 0
+SELECT * FROM orders WHERE o_totalprice > 400000
+SELECT * FROM orders WHERE o_totalprice < 500
+SELECT * FROM lineitem WHERE l_quantity > 45
+SELECT * FROM lineitem WHERE l_discount > 0.09
+SELECT * FROM customer WHERE c_nationkey == 15
+SELECT * FROM orders WHERE o_custkey == 5
+SELECT * FROM customer WHERE c_acctbal > 5000
+SELECT * FROM orders WHERE o_shippriority == 1
+
+# ── Section 4: Compound WHERE clauses (AND / OR) ─────────────────────────────
+SELECT * FROM customer WHERE c_acctbal > 5000 AND c_mktsegment == "BUILDING"
+SELECT * FROM customer WHERE c_nationkey == 5 OR c_nationkey == 10
+SELECT * FROM customer WHERE c_acctbal > 8000 AND c_nationkey == 1
+SELECT * FROM orders WHERE o_totalprice > 200000 AND o_orderstatus == "F"
+SELECT * FROM orders WHERE o_orderstatus == "O" OR o_orderstatus == "P"
+SELECT * FROM customer WHERE (c_acctbal > 5000 AND c_mktsegment == "BUILDING") OR c_nationkey == 15
+
+# ── Section 5: Complex multi-condition expressions ────────────────────────────
+SELECT * FROM orders WHERE (o_totalprice * 1.5) > 100000 AND (o_custkey % 2 == 0)
+SELECT * FROM orders WHERE ((o_totalprice * 1.5) > 100000 AND (o_custkey % 2 == 0)) OR (o_orderstatus != "O")
+SELECT * FROM lineitem WHERE l_extendedprice > 50000 AND l_discount < 0.05
+SELECT * FROM lineitem WHERE l_returnflag == "R" AND l_linestatus == "F"
+SELECT * FROM customer WHERE c_acctbal > 5000 AND c_nationkey != 10 AND c_mktsegment == "FURNITURE"
+SELECT * FROM orders WHERE o_totalprice > 300000 OR (o_orderstatus == "P" AND o_shippriority == 0)
+
+# ── Section 6: Admin-priority UPDATE statements ───────────────────────────────
+ADMIN UPDATE customer SET c_acctbal = 9999.99 WHERE c_custkey == 1
+ADMIN UPDATE customer SET c_acctbal = 5500.00 WHERE c_custkey == 100001
+ADMIN UPDATE orders SET o_orderstatus = "F" WHERE o_orderkey == 100001
+ADMIN UPDATE customer SET c_mktsegment = "HOUSEHOLD" WHERE c_custkey == 100002
+
+# ── Section 7: 3-table JOIN queries ──────────────────────────────────────────
+SELECT * FROM customer JOIN orders ON customer.c_custkey == orders.o_custkey JOIN lineitem ON orders.o_orderkey == lineitem.l_orderkey
+SELECT * FROM customer JOIN orders ON customer.c_custkey == orders.o_custkey
+
+# ── Section 8: Verification SELECTs after UPDATEs ────────────────────────────
+SELECT * FROM customer WHERE c_custkey == 1
+SELECT * FROM customer WHERE c_custkey == 100001
+SELECT * FROM orders WHERE o_orderkey == 100001
+SELECT * FROM customer WHERE c_acctbal > 9990
+
+# ── Section 9: Edge-case and boundary queries ─────────────────────────────────
+SELECT * FROM customer WHERE c_custkey == 20000
+SELECT * FROM orders WHERE o_orderkey == 30000
+SELECT * FROM lineitem WHERE l_linenumber == 7
+SELECT * FROM customer WHERE c_acctbal == 9999.99
+SELECT * FROM orders WHERE o_totalprice > 499000
